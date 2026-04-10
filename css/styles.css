@@ -1,0 +1,33 @@
+/**
+ * FocusCRM — capa visual complementaria (Tailwind vía CDN en index.html).
+ * Estilo Notion/SaaS: superficies suaves, foco legible.
+ */
+
+:root {
+  --focuscrm-ficha: #3b82f6;
+  --focuscrm-ficha-row: rgba(59, 130, 246, 0.12);
+  --focuscrm-ficha-row-dark: rgba(59, 130, 246, 0.22);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+}
+
+/* Filas "En ficha" — acento azul requerido */
+tr.focuscrm-row--ficha {
+  background-color: var(--focuscrm-ficha-row);
+  border-left: 4px solid var(--focuscrm-ficha);
+}
+
+.dark tr.focuscrm-row--ficha {
+  background-color: var(--focuscrm-ficha-row-dark);
+}
+
+/* Modal: evitar salto de layout */
+#modalBackdrop:focus {
+  outline: none;
+}

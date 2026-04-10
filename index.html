@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FocusCRM — MVP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            notion: {
+              50: '#fafafa', 100: '#f5f5f5', 200: '#e5e5e5', 300: '#d4d4d4',
+              400: '#a3a3a3', 500: '#737373', 600: '#525252', 700: '#404040',
+              800: '#262626', 900: '#171717',
+            },
+            accent: { blue: '#3b82f6' },
+          },
+          boxShadow: {
+            notion: '0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06)',
+            notionLg: '0 4px 24px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.04)',
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+</head>
+<body class="h-full font-sans antialiased bg-notion-100 text-notion-900 dark:bg-notion-900 dark:text-notion-50 transition-colors">
+  <div id="app" class="min-h-full flex flex-col">
+    <header class="sticky top-0 z-40 border-b border-notion-200/80 dark:border-notion-700 bg-white/80 dark:bg-notion-800/80 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#3b82f6] text-white shadow-notion">
+            <i data-lucide="target" class="h-5 w-5" aria-hidden="true"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-semibold tracking-tight">FocusCRM</h1>
+            <p class="text-xs text-notion-500 dark:text-notion-400">CRM local · Leads y promociones</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" id="btnTheme" class="inline-flex items-center gap-2 rounded-lg border border-notion-200 dark:border-notion-600 bg-white dark:bg-notion-800 px-3 py-2 text-sm font-medium hover:bg-notion-50 dark:hover:bg-notion-700 transition-colors" title="Cambiar tema">
+            <i data-lucide="moon" class="h-4 w-4 hidden dark:inline" aria-hidden="true"></i>
+            <i data-lucide="sun" class="h-4 w-4 dark:hidden" aria-hidden="true"></i>
+            <span class="hidden sm:inline" id="themeLabel">Oscuro</span>
+          </button>
+          <button type="button" id="btnOpenModal" class="inline-flex items-center gap-2 rounded-lg bg-[#3b82f6] px-4 py-2 text-sm font-semibold text-white shadow-notion hover:bg-blue-600 transition-colors">
+            <i data-lucide="user-plus" class="h-4 w-4" aria-hidden="true"></i>
+            Nuevo lead
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" aria-label="Resumen">
+        <article class="rounded-2xl border border-notion-200/80 dark:border-notion-700 bg-white dark:bg-notion-800 p-5 shadow-notion">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="text-sm font-medium text-notion-500 dark:text-notion-400">Leads activos</p>
+              <p class="mt-2 text-3xl font-bold tabular-nums" id="metricActivos">0</p>
+            </div>
+            <div class="rounded-xl bg-notion-100 dark:bg-notion-700 p-2.5 text-notion-600 dark:text-notion-300">
+              <i data-lucide="users" class="h-5 w-5" aria-hidden="true"></i>
+            </div>
+          </div>
+        </article>
+        <article class="rounded-2xl border border-notion-200/80 dark:border-notion-700 bg-white dark:bg-notion-800 p-5 shadow-notion">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="text-sm font-medium text-notion-500 dark:text-notion-400">En ficha</p>
+              <p class="mt-2 text-3xl font-bold tabular-nums text-[#3b82f6]" id="metricEnFicha">0</p>
+            </div>
+            <div class="rounded-xl bg-sky-100 dark:bg-sky-900/40 p-2.5 text-sky-700 dark:text-sky-300">
+              <i data-lucide="clipboard-list" class="h-5 w-5" aria-hidden="true"></i>
+            </div>
+          </div>
+        </article>
+        <article class="rounded-2xl border border-notion-200/80 dark:border-notion-700 bg-white dark:bg-notion-800 p-5 shadow-notion">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="text-sm font-medium text-notion-500 dark:text-notion-400">Promociones</p>
+              <p class="mt-2 text-3xl font-bold tabular-nums text-notion-600 dark:text-notion-300" id="metricPromociones">0</p>
+            </div>
+            <div class="rounded-xl bg-notion-100 dark:bg-notion-700 p-2.5 text-notion-600 dark:text-notion-300">
+              <i data-lucide="megaphone" class="h-5 w-5" aria-hidden="true"></i>
+            </div>
+          </div>
+        </article>
+        <article class="rounded-2xl border border-notion-200/80 dark:border-notion-700 bg-white dark:bg-notion-800 p-5 shadow-notion">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="text-sm font-medium text-notion-500 dark:text-notion-400">Total en CRM</p>
+              <p class="mt-2 text-3xl font-bold tabular-nums" id="metricTotal">0</p>
+            </div>
+            <div class="rounded-xl bg-notion-100 dark:bg-notion-700 p-2.5 text-notion-600 dark:text-notion-300">
+              <i data-lucide="layout-dashboard" class="h-5 w-5" aria-hidden="true"></i>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="flex flex-wrap items-center gap-2 mb-4" role="tablist" aria-label="Vistas">
+        <button type="button" data-tab="activos" class="tab-btn rounded-lg px-4 py-2 text-sm font-medium bg-[#3b82f6] text-white">
+          Dashboard de leads
+        </button>
+        <button type="button" data-tab="promociones" class="tab-btn rounded-lg px-4 py-2 text-sm font-medium bg-white dark:bg-notion-800 border border-notion-200 dark:border-notion-600 text-notion-700 dark:text-notion-200 hover:bg-notion-50 dark:hover:bg-notion-700">
+          Promociones
+        </button>
+      </div>
+
+      <div class="rounded-2xl border border-notion-200/80 dark:border-notion-700 bg-white dark:bg-notion-800 shadow-notion overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-notion-200 dark:border-notion-700 bg-notion-50/80 dark:bg-notion-900/50">
+                <th class="text-left font-semibold px-4 py-3 whitespace-nowrap">Lead</th>
+                <th class="text-left font-semibold px-4 py-3 whitespace-nowrap">Contacto</th>
+                <th class="text-left font-semibold px-4 py-3 whitespace-nowrap">Canal</th>
+                <th class="text-left font-semibold px-4 py-3 whitespace-nowrap">Interés</th>
+                <th class="text-left font-semibold px-4 py-3 whitespace-nowrap">Alerta seguimiento</th>
+                <th class="text-left font-semibold px-4 py-3 whitespace-nowrap">Próx. contacto</th>
+                <th class="text-left font-semibold px-4 py-3 whitespace-nowrap">En ficha</th>
+                <th class="text-right font-semibold px-4 py-3 whitespace-nowrap">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyLeads"></tbody>
+          </table>
+        </div>
+        <p id="emptyState" class="hidden px-4 py-12 text-center text-notion-500 dark:text-notion-400 text-sm">
+          No hay registros en esta vista. Usa «Nuevo lead» para comenzar.
+        </p>
+      </div>
+    </main>
+
+    <div id="modalBackdrop" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm p-4" aria-hidden="true">
+      <div id="modalPanel" class="w-full max-w-lg rounded-2xl border border-notion-200 dark:border-notion-600 bg-white dark:bg-notion-800 shadow-notionLg max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="flex items-center justify-between border-b border-notion-200 dark:border-notion-700 px-6 py-4">
+          <h2 class="text-lg font-semibold" id="modalTitle">Nuevo lead</h2>
+          <button type="button" id="btnCloseModal" class="rounded-lg p-2 text-notion-500 hover:bg-notion-100 dark:hover:bg-notion-700" aria-label="Cerrar">
+            <i data-lucide="x" class="h-5 w-5" aria-hidden="true"></i>
+          </button>
+        </div>
+        <form id="formLead" class="px-6 py-5 space-y-4">
+          <input type="hidden" id="editId" value="" />
+          <div>
+            <label class="block text-xs font-medium text-notion-500 dark:text-notion-400 mb-1" for="fNombre">Nombre completo</label>
+            <input required id="fNombre" class="w-full rounded-lg border border-notion-200 dark:border-notion-600 bg-white dark:bg-notion-900 px-3 py-2 text-sm focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent outline-none" autocomplete="name" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-notion-500 dark:text-notion-400 mb-1" for="fDni">DNI</label>
+              <input required id="fDni" class="w-full rounded-lg border border-notion-200 dark:border-notion-600 bg-white dark:bg-notion-900 px-3 py-2 text-sm focus:ring-2 focus:ring-[#3b82f6] outline-none" inputmode="numeric" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-notion-500 dark:text-notion-400 mb-1" for="fTel">Teléfono</label>
+              <input required id="fTel" type="tel" class="w-full rounded-lg border border-notion-200 dark:border-notion-600 bg-white dark:bg-notion-900 px-3 py-2 text-sm focus:ring-2 focus:ring-[#3b82f6] outline-none" placeholder="+51..." autocomplete="tel" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-notion-500 dark:text-notion-400 mb-1" for="fCorreo">Correo</label>
+            <input required id="fCorreo" type="email" class="w-full rounded-lg border border-notion-200 dark:border-notion-600 bg-white dark:bg-notion-900 px-3 py-2 text-sm focus:ring-2 focus:ring-[#3b82f6] outline-none" autocomplete="email" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-notion-500 dark:text-notion-400 mb-1" for="fCanal">Canal de ingreso</label>
+            <select id="fCanal" class="w-full rounded-lg border border-notion-200 dark:border-notion-600 bg-white dark:bg-notion-900 px-3 py-2 text-sm focus:ring-2 focus:ring-[#3b82f6] outline-none">
+              <option value="presencial">Presencial</option>
+              <option value="virtual">Virtual</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-notion-500 dark:text-notion-400 mb-1" for="fInteres">Interés</label>
+              <select id="fInteres" class="w-full rounded-lg border border-notion-200 dark:border-notion-600 bg-white dark:bg-notion-900 px-3 py-2 text-sm focus:ring-2 focus:ring-[#3b82f6] outline-none">
+                <option value="bajo">Bajo</option>
+                <option value="medio" selected>Medio</option>
+                <option value="alto">Alto</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-notion-500 dark:text-notion-400 mb-1" for="fProxLlamada">Próximo seguimiento</label>
+              <input required id="fProxLlamada" type="date" class="w-full rounded-lg border border-notion-200 dark:border-notion-600 bg-white dark:bg-notion-900 px-3 py-2 text-sm focus:ring-2 focus:ring-[#3b82f6] outline-none" />
+            </div>
+          </div>
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" id="btnCancelModal" class="rounded-lg border border-notion-200 dark:border-notion-600 px-4 py-2 text-sm font-medium hover:bg-notion-50 dark:hover:bg-notion-700">
+              Cancelar
+            </button>
+            <button type="submit" class="rounded-lg bg-[#3b82f6] px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600">
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Un solo .js: con file:// algunos navegadores no cargan el segundo script local y la UI queda muerta (sin modal). La lógica está en secciones dentro de focuscrm.js -->
+  <script src="js/focuscrm.js"></script>
+</body>
+</html>
