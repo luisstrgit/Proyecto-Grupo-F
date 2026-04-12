@@ -1,0 +1,10 @@
+name: CI Proyecto Grupo F
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout del codigo
+      uses: actions/checkout@v2
+    - name: Test de Bienvenida
+      run: echo "¡La automatización está activa para el Grupo F!"
