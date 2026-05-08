@@ -12,7 +12,6 @@ jobs:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
-          # Usamos tu contraseña real aquí
           SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
           ACCEPT_EULA: Y
           MSSQL_TCP_PORT: 56719
@@ -33,12 +32,11 @@ jobs:
 
       - name: Correr Pruebas (Tests)
         run: |
-          echo "Esperando 30s con tu contraseña real..."
+          echo "Esperando 30 segundos..."
           sleep 30
           npm test
         env:
           DB_HOST: localhost
           DB_PORT: 56719
-          # El robot usará la misma contraseña que tu código
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: FocusCRM
