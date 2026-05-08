@@ -1,55 +1,23 @@
-name: CI/CD Focus CRM Enterprise Edition
+name: CI/CD FocusCRM - Grupo F
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ] # Se activa cuando subes cambios a la rama main
 
 jobs:
-  Continuous-Integration:
+  build-and-push:
     runs-on: ubuntu-latest
-
-    services:
-      sqlserver:
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        env:
-          SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          ACCEPT_EULA: Y
-          MSSQL_TCP_PORT: 56719
-        ports:
-          - 56719:56719
-
     steps:
-      - name: Checkout Source Code
+      - name: Checkout del código
         uses: actions/checkout@v3
 
-      - name: Setup Node.js Environment
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install Project Dependencies
-        run: npm install
-
-      - name: Database Readiness & Quality Gate
-        run: |
-          echo "Iniciando protocolo de espera para SQL Server (60s)..."
-          sleep 60
-          npm test
-        env:
-          DB_HOST: localhost
-          DB_PORT: 56719
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME: FocusCRM
-
-      - name: Authenticate with Docker Registry
-        if: success()
+      - name: Login en Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Production Image Build & Deployment
-        if: success()
+      - name: Build y Push imagen
         uses: docker/build-push-action@v4
         with:
           context: .
