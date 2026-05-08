@@ -1,11 +1,11 @@
-name: CI/CD Focus CRM con SQL Server
+name: CI/CD Focus CRM Enterprise Edition
 
 on:
   push:
     branches: [ "main", "develop" ]
 
 jobs:
-  build-and-test:
+  Continuous-Integration:
     runs-on: ubuntu-latest
 
     services:
@@ -19,24 +19,39 @@ jobs:
           - 56719:56719
 
     steps:
-      - name: Checkout del código
+      - name: Checkout Source Code
         uses: actions/checkout@v3
 
-      - name: Configurar Node.js
+      - name: Setup Node.js Environment
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Instalar dependencias
+      - name: Install Project Dependencies
         run: npm install
 
-      - name: Correr Pruebas (Tests)
+      - name: Database Readiness & Quality Gate
         run: |
-          echo "Esperando 30 segundos..."
-          sleep 30
+          echo "Iniciando protocolo de espera para SQL Server (60s)..."
+          sleep 60
           npm test
         env:
           DB_HOST: localhost
           DB_PORT: 56719
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: FocusCRM
+
+      - name: Authenticate with Docker Registry
+        if: success()
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Production Image Build & Deployment
+        if: success()
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: luisstrdocker/focus-crm:latest
