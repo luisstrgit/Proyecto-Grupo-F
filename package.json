@@ -1,4 +1,12 @@
 {
+  "name": "proyecto-grupo-f",
+  "version": "1.0.0",
+  "description": "CRM Focus",
+  "main": "database.js",
+  "scripts": {
+    "start": "node database.js",
+    "test": "jest"
+  },
   "dependencies": {
     "dotenv": "^17.4.2",
     "sequelize": "^6.37.8",
@@ -6,8 +14,5 @@
   },
   "devDependencies": {
     "jest": "^30.3.0"
-  },
-  "scripts": {
-    "test": "jest"
   }
 }
