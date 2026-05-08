@@ -1,14 +1,15 @@
 name: CI/CD Focus CRM con SQL Server
 
+# El proceso se activa al hacer push a estas ramas
 on:
   push:
-    branches: [ "main", "develop" ] # Se activa al subir a estas ramas
+    branches: [ "main", "develop" ]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    # GitHub enciende un SQL Server automático para tus pruebas
+    # Definimos el servicio de SQL Server que GitHub levantará en la nube
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
@@ -19,32 +20,38 @@ jobs:
           - 1433:1433
 
     steps:
+      # 1. Descargamos el código del repositorio
       - name: Checkout del código
         uses: actions/checkout@v3
 
+      # 2. Preparamos el entorno de Node.js
       - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
+      # 3. Instalamos las librerías necesarias
       - name: Instalar dependencias
         run: npm install
 
-      # Aquí se ejecutan tus archivos .test.js
+      # 4. EJECUTAR PRUEBAS (Aquí aplicamos el parche de tiempo)
       - name: Correr Pruebas (Tests)
-        run: npm test
+        run: |
+          echo "Esperando 20 segundos a que SQL Server esté totalmente listo..."
+          sleep 20
+          npm test
         env:
           DB_HOST: localhost
           DB_PASSWORD: Password_Fuerte_123!
 
-      # Si los tests pasan, GitHub se loguea en tu Docker Hub
+      # 5. LOGIN EN DOCKER HUB (Usando tus Secrets de repositorio)
       - name: Login en Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # El robot construye la imagen y la sube sola
+      # 6. CONSTRUCCIÓN Y SUBIDA FINAL
       - name: Build y Push a Docker Hub
         uses: docker/build-push-action@v4
         with:
