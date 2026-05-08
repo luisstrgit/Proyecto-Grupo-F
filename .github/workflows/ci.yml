@@ -1,6 +1,5 @@
 name: CI/CD Focus CRM con SQL Server
 
-# El proceso se activa al hacer push a estas ramas
 on:
   push:
     branches: [ "main", "develop" ]
@@ -9,7 +8,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    # Definimos el servicio de SQL Server que GitHub levantará en la nube
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
@@ -17,41 +15,37 @@ jobs:
           SA_PASSWORD: Password_Fuerte_123!
           ACCEPT_EULA: Y
         ports:
-          - 1433:1433
+          # AQUÍ ESTÁ EL TRUCO: Mapeamos el puerto 1433 del contenedor al 56719 que pide tu código
+          - 56719:1433
 
     steps:
-      # 1. Descargamos el código del repositorio
       - name: Checkout del código
         uses: actions/checkout@v3
 
-      # 2. Preparamos el entorno de Node.js
       - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      # 3. Instalamos las librerías necesarias
       - name: Instalar dependencias
         run: npm install
 
-      # 4. EJECUTAR PRUEBAS (Aquí aplicamos el parche de tiempo)
       - name: Correr Pruebas (Tests)
         run: |
-          echo "Esperando 20 segundos a que SQL Server esté totalmente listo..."
+          echo "Esperando a que SQL Server despierte en el puerto 56719..."
           sleep 20
           npm test
         env:
           DB_HOST: localhost
+          DB_PORT: 56719
           DB_PASSWORD: Password_Fuerte_123!
 
-      # 5. LOGIN EN DOCKER HUB (Usando tus Secrets de repositorio)
       - name: Login en Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 6. CONSTRUCCIÓN Y SUBIDA FINAL
       - name: Build y Push a Docker Hub
         uses: docker/build-push-action@v4
         with:
