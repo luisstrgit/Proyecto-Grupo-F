@@ -2,7 +2,7 @@ name: CI/CD FocusCRM - Grupo F
 
 on:
   push:
-    branches: [ "main" ] # Se activa cuando subes cambios a la rama main
+    branches: [ "main", "develop" ] # <-- AQUÍ ESTÁ EL TRUCO
 
 jobs:
   build-and-push:
